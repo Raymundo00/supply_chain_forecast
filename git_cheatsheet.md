@@ -55,13 +55,6 @@ This file contains the most common Git commands used during the setup and develo
 
 ---
 
-## ✅ Tip
-
-Make regular commits with clear messages to track your progress and changes properly.
-
-
----
-
 ## 🖥️ Opening VS Code from Git Bash
 
 | Command | Description |
@@ -74,6 +67,13 @@ Make regular commits with clear messages to track your progress and changes prop
 > - Search for: `Shell Command: Install 'code' command in PATH`  
 > - Press Enter, then restart Git Bash
 
+---
+
+## ✅ Tip
+
+Make regular commits with clear messages to track your progress and changes properly.
+
+---
 
 ## 📝 Extra Notes
 
@@ -93,3 +93,4 @@ You should **track `.gitignore` with Git** like any other config file:
 git add .gitignore
 git commit -m "Add or update .gitignore"
 git push
+
