@@ -1,1 +1,12 @@
-__pycache__/\n.env\ndata/\n*.pyc
+# Byte-compiled / cache files
+__pycache__/
+*.pyc
+
+# Environment files
+.env
+
+# Local data files
+data/
+
+# VS Code settings (opcional si usas VS Code)
+.vscode/
