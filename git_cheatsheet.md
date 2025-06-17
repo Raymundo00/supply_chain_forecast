@@ -37,7 +37,7 @@ This file contains the most common Git commands used during the setup and develo
 
 | Command | Description |
 |--------|-------------|
-| `git remote add origin https://github.com/youruser/project.git` | Link local repo to GitHub. |
+| `git remote add origin https://github.com/YOUR-USER/project.git` | Link local repo to GitHub. |
 | `git remote -v` | Check remote connection. |
 | `git push -u origin main` | Push local commits to GitHub (first time). |
 | `git push` | Push new commits to GitHub. |
