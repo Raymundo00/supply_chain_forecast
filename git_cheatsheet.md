@@ -58,3 +58,38 @@ This file contains the most common Git commands used during the setup and develo
 ## ✅ Tip
 
 Make regular commits with clear messages to track your progress and changes properly.
+
+
+---
+
+## 🖥️ Opening VS Code from Git Bash
+
+| Command | Description |
+|---------|-------------|
+| `code .` | Opens the current folder in Visual Studio Code. Make sure `code` is installed in PATH. |
+
+> To enable the `code` command:
+> - Open VS Code  
+> - Press `Ctrl + Shift + P`  
+> - Search for: `Shell Command: Install 'code' command in PATH`  
+> - Press Enter, then restart Git Bash
+
+
+## 📝 Extra Notes
+
+### 📁 Why `.gitignore` is not ignored
+
+Even though the file is called `.gitignore`, **it is not ignored by Git**.
+
+Git uses it to know what other files or folders to ignore, such as:
+
+- `.env` → environment/credential files
+- `data/` → raw data files (like CSVs or Excel)
+- `__pycache__/` → temporary Python files
+
+You should **track `.gitignore` with Git** like any other config file:
+
+```bash
+git add .gitignore
+git commit -m "Add or update .gitignore"
+git push
