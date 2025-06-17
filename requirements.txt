@@ -1,1 +1,4 @@
-pandas\nsqlalchemy\npsycopg2-binary
+pandas
+sqlalchemy
+psycopg2-binary
+python-dotenv
