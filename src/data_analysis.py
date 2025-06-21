@@ -7,8 +7,9 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from src.db_connection import connect_to_db
 from sqlalchemy.engine import Engine
+from src.db_connection import connect_to_db
+
 
 # Load environment and get connection params
 load_dotenv()
