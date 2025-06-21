@@ -94,3 +94,5 @@ git add .gitignore
 git commit -m "Add or update .gitignore"
 git push
 
+| `python -m src.data_analysis` | Run a Python file as a module when using a folder structure. | Python files inside src folder
+
