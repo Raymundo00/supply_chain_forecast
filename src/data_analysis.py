@@ -38,8 +38,15 @@ def load_orders() -> pd.DataFrame:
 
 def aggregate_by_material(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Group by material and count number of orders (lots),
-    and sum received quantity and demand estimate.
+    Group by material and return aggregation with lots, total received, and total demand.
+    
+    Parameters:
+        df (pd.DataFrame): Purchase order data
+    
+    Returns:
+        pd.DataFrame: Aggregated summary by material
+
+    Summary: “La función espera recibir un argumento llamado df, y ese argumento debe ser un objeto de tipo pandas.DataFrame.”
     """
     agg = (
         df.groupby("material")

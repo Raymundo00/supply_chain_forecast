@@ -18,6 +18,8 @@ DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 
 def connect_to_db() -> PGConnection | None:
+    """Connect to PostgreSQL using psycopg2 and return connection object."""
+
     try:
         connection = psycopg2.connect(
             user=DB_USER,
