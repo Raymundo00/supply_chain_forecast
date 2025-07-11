@@ -5,6 +5,7 @@ and performs basic aggregation to estimate lots per material.
 
 import os
 import pandas as pd
+import numpy as np
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
@@ -27,40 +28,82 @@ def get_engine() -> Engine:
     )
     return create_engine(url)
 
-def load_orders() -> pd.DataFrame:
-    """Load the orders table into a Pandas DataFrame."""
+def load_po_data() -> pd.DataFrame:
+    """
+    Load purchase order data from po_table.po_data.
+
+    Returns:
+        pd.DataFrame: PO data including past and future entries
+    """
     engine = get_engine()
-    query = "SELECT * FROM po_table.ordenes_compra;"
+    query = "SELECT * FROM po_table.po_data;"
     df = pd.read_sql(query, engine)
-    print("\nLoaded DataFrame:")
+    print("\nPO data loaded:")
     print(df.head())
     return df
 
-def aggregate_by_material(df: pd.DataFrame) -> pd.DataFrame:
+def summarize_historical_lots(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Group by material and return aggregation with lots, total received, and total demand.
-    
-    Parameters:
-        df (pd.DataFrame): Purchase order data
-    
-    Returns:
-        pd.DataFrame: Aggregated summary by material
+    Summarizes historical performance per material.
 
-    Summary: “La función espera recibir un argumento llamado df, y ese argumento debe ser un objeto de tipo pandas.DataFrame.”
+    Parameters:
+        df (pd.DataFrame): Full PO dataset
+
+    Returns:
+        pd.DataFrame: Aggregated summary with fulfillment and lots
     """
-    agg = (
-        df.groupby("material")
-          .agg(
-            lots_received=("orden_compra", "count"),
-            total_received=("cantidad_recibida", "sum"),
-            total_demand=("demanda_estimacion", "sum")
-          )
-          .reset_index()
+    historical = df[df["is_historical"] == True].copy()
+
+    summary = (
+        historical.groupby("material")
+        .agg(
+            total_pos=("po_number", "nunique"),
+            total_quantity_ordered=("quantity_ordered", "sum"),
+            total_quantity_received=("quantity_received", "sum"),
+            lots_received=("lot_number", "nunique")
+        )
+        .reset_index()
     )
-    print("\nAggregation by material:")
-    print(agg)
-    return agg
+
+    summary["fulfillment_rate"] = (summary["total_quantity_received"] / summary["total_quantity_ordered"] * 100).round(2)
+
+    print("\nHistorical summary:")
+    print(summary)
+    return summary
+
+
+def estimate_future_lots(df: pd.DataFrame, historical_summary: pd.DataFrame) -> pd.DataFrame:
+    """
+    Estimate the number of lots we might receive for future POs based on historical fulfillment.
+
+    Parameters:
+        df (pd.DataFrame): Full PO dataset
+        historical_summary (pd.DataFrame): Summary with lots and fulfillment
+
+    Returns:
+        pd.DataFrame: Estimated lots per material for future orders
+    """
+    future = df[df["is_historical"] == False].copy()
+
+    # Merge with historical fulfillment rates and average quantity per lot
+    merged = future.merge(historical_summary[["material", "fulfillment_rate", "lots_received", "total_quantity_received"]],
+                          on="material", how="left")
+
+    # Calculate avg quantity per lot
+    merged["avg_qty_per_lot"] = merged["total_quantity_received"] / merged["lots_received"]
+    merged["avg_qty_per_lot"] = merged["avg_qty_per_lot"].replace([np.inf, 0], np.nan)
+
+    # Estimate lots: apply fulfillment rate and divide by typical lot size
+    merged["expected_quantity"] = merged["quantity_ordered"] * (merged["fulfillment_rate"] / 100)
+    merged["estimated_lots"] = (merged["expected_quantity"] / merged["avg_qty_per_lot"]).apply(np.ceil)
+
+    print("\nFuture PO estimation:")
+    print(merged[["material", "po_number", "quantity_ordered", "expected_quantity", "estimated_lots"]])
+
+    return merged
+
 
 if __name__ == "__main__":
-    df_orders = load_orders()
-    df_summary = aggregate_by_material(df_orders)
+    df = load_po_data()
+    summary = summarize_historical_lots(df)
+    estimates = estimate_future_lots(df, summary)
